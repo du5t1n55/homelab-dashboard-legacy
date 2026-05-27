@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ninja.home</title>
+<style>
+  :root {
+    --bg:      oklch(9% 0.015 252);
+    --bg2:     oklch(12.5% 0.018 252);
+    --surface: oklch(16% 0.02 252);
+    --border:  oklch(22% 0.022 252);
+    --text:    oklch(91% 0.007 252);
+    --muted:   oklch(54% 0.012 252);
+    --accent:  oklch(64% 0.14 248);
+    --ok:      oklch(71% 0.17 145);
+    --warn:    oklch(78% 0.16 78);
+    --crit:    oklch(62% 0.22 25);
+    --edit:    oklch(72% 0.18 55);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5; font-size: 14px; }
+
+  /* Header */
+  header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 13px 28px; display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 100; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-mark { width: 28px; height: 28px; background: oklch(64% 0.14 248 / 0.12); border: 1px solid oklch(64% 0.14 248 / 0.25); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--accent); flex-shrink: 0; }
+  .logo-mark svg { width: 13px; height: 13px; }
+  .logo-text { font-size: 0.875rem; font-weight: 600; letter-spacing: -0.02em; color: var(--text); }
+  .logo-text span { color: var(--accent); }
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .search-wrap { flex: 1; max-width: 300px; position: relative; }
+  .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; width: 13px; height: 13px; }
+  #search { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px 6px 30px; color: var(--text); font-size: 13px; outline: none; }
+  #search:focus { border-color: var(--accent); }
+  #count { font-size: 11px; color: var(--muted); min-width: 60px; }
+  .edit-btn { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-size: 12px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  .edit-btn:hover { border-color: var(--edit); color: var(--edit); }
+  .edit-btn.active { border-color: var(--edit); color: var(--edit); background: oklch(72% 0.18 55 / 0.1); }
+  .edit-btn svg { width: 13px; height: 13px; }
+
+  /* Main */
+  main { max-width: 1400px; margin: 0 auto; padding: 28px 28px 60px; }
+
+  /* Section */
+  .section { margin-bottom: 36px; }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .section-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+  .section-line { flex: 1; height: 1px; background: var(--border); }
+  .section-actions { display: none; gap: 6px; }
+  .editing .section-actions { display: flex; }
+  .section-add-btn { display: flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 4px; border: 1px dashed var(--border); background: transparent; color: var(--muted); font-size: 11px; cursor: pointer; transition: all 0.15s; }
+  .section-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .section-del-btn { display: flex; align-items: center; padding: 3px 6px; border-radius: 4px; border: 1px solid transparent; background: transparent; color: var(--muted); font-size: 11px; cursor: pointer; transition: all 0.15s; }
+  .section-del-btn:hover { border-color: var(--crit); color: var(--crit); }
+  .section-del-btn svg, .section-add-btn svg { width: 11px; height: 11px; }
+
+  /* Grid */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+
+  /* Card */
+  .card { display: flex; align-items: center; gap: 12px; padding: 13px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: var(--text); transition: border-color 0.15s, background 0.15s; position: relative; }
+  .card:hover { border-color: oklch(40% 0.03 252); background: oklch(18% 0.022 252); }
+  .card-icon { width: 34px; height: 34px; border-radius: 6px; background: oklch(20% 0.025 252); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .card-icon svg { width: 16px; height: 16px; color: var(--muted); }
+  .card-icon img { width: 21px; height: 21px; object-fit: contain; }
+  .card-body { min-width: 0; flex: 1; }
+  .card-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-url { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+  .card-tag { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 3px; background: oklch(64% 0.14 248 / 0.1); color: var(--accent); border: 1px solid oklch(64% 0.14 248 / 0.2); margin-top: 4px; }
+
+  /* Edit overlays on cards */
+  .card-edit-overlay { display: none; position: absolute; top: 4px; right: 4px; gap: 3px; }
+  .editing .card-edit-overlay { display: flex; }
+  .card-edit-overlay button { width: 22px; height: 22px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg2); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.12s; }
+  .card-edit-overlay button:hover { border-color: var(--accent); color: var(--accent); }
+  .card-edit-overlay button.del:hover { border-color: var(--crit); color: var(--crit); }
+  .card-edit-overlay button svg { width: 11px; height: 11px; pointer-events: none; }
+  .editing .card { padding-top: 28px; }
+
+  /* Add section button */
+  #add-section-btn { display: none; align-items: center; gap: 6px; margin: 0 auto 32px; padding: 8px 18px; border-radius: 6px; border: 1px dashed var(--border); background: transparent; color: var(--muted); font-size: 12px; cursor: pointer; transition: all 0.15s; }
+  #add-section-btn:hover { border-color: var(--accent); color: var(--accent); }
+  #add-section-btn svg { width: 13px; height: 13px; }
+  .editing #add-section-btn { display: flex; }
+
+  /* Footer */
+  footer { text-align: center; padding: 20px; font-size: 11px; color: var(--muted); border-top: 1px solid var(--border); }
+  footer kbd { display: inline-block; background: var(--surface); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; font-size: 10px; }
+
+  /* No results */
+  #no-results { display: none; text-align: center; padding: 60px 20px; color: var(--muted); font-size: 13px; }
+
+  /* Modal */
+  .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center; }
+  .modal-backdrop.open { display: flex; }
+  .modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 24px; width: 420px; max-width: 95vw; }
+  .modal h2 { font-size: 14px; font-weight: 600; margin-bottom: 18px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; font-weight: 500; }
+  .field input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; color: var(--text); font-size: 13px; outline: none; }
+  .field input:focus { border-color: var(--accent); }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+  .btn { padding: 7px 14px; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); transition: all 0.15s; }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn:hover { opacity: 0.85; }
+
+  /* Toast */
+  #toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 16px; font-size: 12px; color: var(--text); z-index: 300; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+  #toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="/">
+    <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+    <span class="logo-text">ninja<span>.</span>home</span>
+  </a>
+  <div class="header-right">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="search" type="text" placeholder="Search services…" autocomplete="off">
+    </div>
+    <span id="count"></span>
+    <button class="edit-btn" id="edit-toggle" title="Edit services">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Edit
+    </button>
+  </div>
+</header>
+
+<main id="main">
+  <div id="sections"></div>
+  <button id="add-section-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Add Section
+  </button>
+  <div id="no-results">No services match your search.</div>
+</main>
+
+<footer>ninja.home &nbsp;·&nbsp; <span id="total"></span> services &nbsp;·&nbsp; press <kbd>/</kbd> to search</footer>
+
+<!-- Edit modal -->
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <h2 id="modal-title">Add Service</h2>
+    <div class="field"><label>Name</label><input id="f-name" placeholder="Grafana"></div>
+    <div class="field"><label>URL</label><input id="f-url" placeholder="http://192.168.1.127:3000"></div>
+    <div class="field"><label>Tag</label><input id="f-tag" placeholder="Metrics"></div>
+    <div class="field"><label>Icon slug <span style="color:var(--muted);font-weight:400">(dashboard-icons name, e.g. grafana)</span></label><input id="f-icon" placeholder="grafana"></div>
+    <div class="field"><label>Search tags <span style="color:var(--muted);font-weight:400">(space-separated)</span></label><input id="f-tags" placeholder="grafana metrics dashboard"></div>
+    <div class="modal-actions">
+      <button class="btn" id="modal-cancel">Cancel</button>
+      <button class="btn btn-primary" id="modal-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Section name modal -->
+<div class="modal-backdrop" id="section-modal">
+  <div class="modal">
+    <h2>Add Section</h2>
+    <div class="field"><label>Section name</label><input id="f-section-name" placeholder="Storage"></div>
+    <div class="modal-actions">
+      <button class="btn" id="section-cancel">Cancel</button>
+      <button class="btn btn-primary" id="section-save">Add</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const ICON_BASE = 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/';
+let data = { sections: [] };
+let editMode = false;
+let modalState = {}; // { sectionId, serviceId (if editing) }
+
+// ── Icons ──────────────────────────────────────────────────────────────────
+function iconEl(icon, name) {
+  const wrap = document.createElement('div');
+  wrap.className = 'card-icon';
+  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 24 24'); svg.setAttribute('fill','none');
+  svg.setAttribute('stroke','currentColor'); svg.setAttribute('stroke-width','1.5');
+  svg.setAttribute('stroke-linecap','round'); svg.setAttribute('stroke-linejoin','round');
+  const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d','M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z');
+  const poly = document.createElementNS('http://www.w3.org/2000/svg','polyline');
+  poly.setAttribute('points','13 2 13 9 20 9');
+  svg.appendChild(path); svg.appendChild(poly); wrap.appendChild(svg);
+  if (icon) {
+    const img = document.createElement('img');
+    img.alt = ''; img.src = ICON_BASE + icon + '.png';
+    img.onload = () => svg.style.display = 'none';
+    img.onerror = () => img.remove();
+    svg.style.display = 'none'; wrap.insertBefore(img, svg);
+  }
+  return wrap;
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────
+function render() {
+  const container = document.getElementById('sections');
+  container.innerHTML = '';
+  let total = 0;
+
+  data.sections.forEach(section => {
+    const sec = document.createElement('div');
+    sec.className = 'section'; sec.dataset.section = ''; sec.dataset.sectionId = section.id;
+
+    sec.innerHTML = `
+      <div class="section-header">
+        <span class="section-title">${section.title}</span>
+        <div class="section-line"></div>
+        <div class="section-actions">
+          <button class="section-add-btn" data-sid="${section.id}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add
+          </button>
+          <button class="section-del-btn" data-sid="${section.id}" title="Delete section">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="grid"></div>
+    `;
+
+    const grid = sec.querySelector('.grid');
+    section.services.forEach(svc => {
+      const card = document.createElement('a');
+      card.className = 'card';
+      card.href = svc.url; card.target = '_blank';
+      card.dataset.name = svc.name; card.dataset.tags = svc.tags || '';
+      card.dataset.sectionId = section.id; card.dataset.serviceId = svc.id;
+      card.appendChild(iconEl(svc.icon, svc.name));
+      const body = document.createElement('div');
+      body.className = 'card-body';
+      const host = (() => { try { return new URL(svc.url).host; } catch { return svc.url; } })();
+      body.innerHTML = `<div class="card-name">${svc.name}</div><div class="card-url">${host}</div>${svc.tag ? `<div class="card-tag">${svc.tag}</div>` : ''}`;
+      card.appendChild(body);
+      const overlay = document.createElement('div');
+      overlay.className = 'card-edit-overlay';
+      overlay.innerHTML = `
+        <button class="edit-svc" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="del del-svc" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      `;
+      card.appendChild(overlay);
+      grid.appendChild(card);
+      total++;
+    });
+
+    container.appendChild(sec);
+  });
+
+  document.getElementById('total').textContent = total;
+  attachHandlers();
+  applyFilter(document.getElementById('search').value);
+}
+
+// ── Event handlers ─────────────────────────────────────────────────────────
+function attachHandlers() {
+  document.querySelectorAll('.edit-svc').forEach(btn => btn.addEventListener('click', e => {
+    e.preventDefault(); e.stopPropagation();
+    const card = btn.closest('.card');
+    openModal(card.dataset.sectionId, card.dataset.serviceId);
+  }));
+  document.querySelectorAll('.del-svc').forEach(btn => btn.addEventListener('click', async e => {
+    e.preventDefault(); e.stopPropagation();
+    const card = btn.closest('.card');
+    if (!confirm(`Delete "${card.dataset.name}"?`)) return;
+    await api('DELETE', `/api/sections/${card.dataset.sectionId}/services/${card.dataset.serviceId}`);
+    await reload(); toast('Service deleted');
+  }));
+  document.querySelectorAll('.section-add-btn').forEach(btn => btn.addEventListener('click', () => {
+    openModal(btn.dataset.sid, null);
+  }));
+  document.querySelectorAll('.section-del-btn').forEach(btn => btn.addEventListener('click', async () => {
+    const sid = btn.dataset.sid;
+    const sec = data.sections.find(s => s.id === sid);
+    if (sec && sec.services.length > 0 && !confirm(`Delete section "${sec.title}" and its ${sec.services.length} service(s)?`)) return;
+    await api('DELETE', `/api/sections/${sid}`);
+    await reload(); toast('Section deleted');
+  }));
+}
+
+// ── Modal ──────────────────────────────────────────────────────────────────
+function openModal(sectionId, serviceId) {
+  modalState = { sectionId, serviceId };
+  const svc = serviceId ? data.sections.flatMap(s => s.services).find(s => s.id === serviceId) : null;
+  document.getElementById('modal-title').textContent = svc ? 'Edit Service' : 'Add Service';
+  document.getElementById('f-name').value  = svc?.name  || '';
+  document.getElementById('f-url').value   = svc?.url   || '';
+  document.getElementById('f-tag').value   = svc?.tag   || '';
+  document.getElementById('f-icon').value  = svc?.icon  || '';
+  document.getElementById('f-tags').value  = svc?.tags  || '';
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('f-name').focus();
+}
+
+document.getElementById('modal-cancel').addEventListener('click', () => document.getElementById('modal').classList.remove('open'));
+document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) document.getElementById('modal').classList.remove('open'); });
+
+document.getElementById('modal-save').addEventListener('click', async () => {
+  const body = {
+    name:  document.getElementById('f-name').value.trim(),
+    url:   document.getElementById('f-url').value.trim(),
+    tag:   document.getElementById('f-tag').value.trim(),
+    icon:  document.getElementById('f-icon').value.trim(),
+    tags:  document.getElementById('f-tags').value.trim(),
+  };
+  if (!body.name || !body.url) { alert('Name and URL are required'); return; }
+  const { sectionId, serviceId } = modalState;
+  if (serviceId) {
+    await api('PUT', `/api/sections/${sectionId}/services/${serviceId}`, body);
+    toast('Service updated');
+  } else {
+    await api('POST', `/api/sections/${sectionId}/services`, body);
+    toast('Service added');
+  }
+  document.getElementById('modal').classList.remove('open');
+  await reload();
+});
+
+// Add section modal
+document.getElementById('add-section-btn').addEventListener('click', () => {
+  document.getElementById('f-section-name').value = '';
+  document.getElementById('section-modal').classList.add('open');
+  document.getElementById('f-section-name').focus();
+});
+document.getElementById('section-cancel').addEventListener('click', () => document.getElementById('section-modal').classList.remove('open'));
+document.getElementById('section-save').addEventListener('click', async () => {
+  const title = document.getElementById('f-section-name').value.trim();
+  if (!title) return;
+  await api('POST', '/api/sections', { title });
+  document.getElementById('section-modal').classList.remove('open');
+  await reload(); toast('Section added');
+});
+
+// ── Edit toggle ────────────────────────────────────────────────────────────
+document.getElementById('edit-toggle').addEventListener('click', () => {
+  editMode = !editMode;
+  document.getElementById('main').classList.toggle('editing', editMode);
+  document.getElementById('edit-toggle').classList.toggle('active', editMode);
+  document.getElementById('edit-toggle').querySelector('span, text') ;
+  document.getElementById('edit-toggle').lastChild.textContent = editMode ? ' Done' : ' Edit';
+});
+
+// ── Search ─────────────────────────────────────────────────────────────────
+function applyFilter(q) {
+  q = q.toLowerCase().trim();
+  const cards = document.querySelectorAll('.card');
+  const sections = document.querySelectorAll('[data-section]');
+  let visible = 0;
+  cards.forEach(c => {
+    const hay = ((c.dataset.name||'') + ' ' + (c.dataset.tags||'')).toLowerCase();
+    const show = !q || hay.includes(q);
+    c.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  sections.forEach(s => {
+    const any = Array.from(s.querySelectorAll('.card')).some(c => c.style.display !== 'none');
+    s.style.display = any ? '' : 'none';
+  });
+  document.getElementById('count').textContent = q ? `${visible} of ${document.querySelectorAll('.card').length}` : '';
+  document.getElementById('no-results').style.display = visible === 0 && q ? 'block' : 'none';
+}
+
+document.getElementById('search').addEventListener('input', e => applyFilter(e.target.value));
+document.addEventListener('keydown', e => {
+  const s = document.getElementById('search');
+  if (e.key === '/' && document.activeElement !== s && !document.getElementById('modal').classList.contains('open')) {
+    e.preventDefault(); s.focus();
+  }
+  if (e.key === 'Escape') {
+    document.getElementById('modal').classList.remove('open');
+    document.getElementById('section-modal').classList.remove('open');
+    s.value = ''; applyFilter(''); s.blur();
+  }
+});
+
+// ── API ────────────────────────────────────────────────────────────────────
+async function api(method, path, body) {
+  const res = await fetch(path, {
+    method,
+    headers: body ? { 'Content-Type': 'application/json' } : {},
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.detail || 'API error'); }
+  return res.json().catch(() => ({}));
+}
+
+async function reload() {
+  data = await api('GET', '/api/services');
+  render();
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+reload();
+</script>
+</body>
+</html>

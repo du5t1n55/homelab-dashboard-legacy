@@ -1,0 +1,15 @@
+[Unit]
+Description=Homelab Dashboard API
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/homelab-api
+Environment=SERVICES_FILE=/var/www/html/services.json
+ExecStart=/opt/homelab-api/venv/bin/uvicorn main:app --host 127.0.0.1 --port 8099
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
