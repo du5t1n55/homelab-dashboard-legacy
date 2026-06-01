@@ -42,6 +42,16 @@
   /* Main */
   main { max-width: 1400px; margin: 0 auto; padding: 28px 28px 60px; }
 
+  /* Stats strip */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 28px; }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+  .tile-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .tile-value { font-size: 22px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+  .tile-value .unit { font-size: 12px; color: var(--muted); margin-left: 3px; font-weight: 400; }
+  .tile-value.ok   { color: var(--ok); }
+  .tile-value.warn { color: var(--warn); }
+  .tile-value.crit { color: var(--crit); }
+
   /* Section */
   .section { margin-bottom: 36px; }
   .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
@@ -131,6 +141,7 @@
 </header>
 
 <main id="main">
+  <div id="stats" class="stats"></div>
   <div id="sections"></div>
   <button id="add-section-btn">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -176,6 +187,45 @@ const ICON_BASE = 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/';
 let data = { sections: [] };
 let editMode = false;
 let modalState = {}; // { sectionId, serviceId (if editing) }
+
+// ── Stats ──────────────────────────────────────────────────────────────────
+const PROM_TILES = [
+  { id: 'cpu_pct',      label: 'CPU',        unit: '%',    decimals: 1, thresholds: [60, 85] },
+  { id: 'mem_pct',      label: 'Memory',     unit: '%',    decimals: 1, thresholds: [70, 90] },
+  { id: 'disk_pct',     label: 'Disk',       unit: '%',    decimals: 1, thresholds: [75, 90] },
+  { id: 'net_rx_mbps',  label: 'Net RX',     unit: 'Mbps', decimals: 1, thresholds: null },
+  { id: 'targets_up',   label: 'Targets up', unit: '',     decimals: 0, thresholds: null },
+  { id: 'targets_down', label: 'Down',       unit: '',     decimals: 0, thresholds: [0.5, 0.5] },
+];
+
+function classify(val, thresholds) {
+  if (!thresholds || val == null) return '';
+  const [warn, crit] = thresholds;
+  return val >= crit ? 'crit' : val >= warn ? 'warn' : 'ok';
+}
+
+function renderStats() {
+  document.getElementById('stats').innerHTML = PROM_TILES.map(t => `
+    <div class="tile">
+      <div class="tile-label">${t.label}</div>
+      <div class="tile-value" id="tile-${t.id}">—</div>
+    </div>`).join('');
+}
+
+async function refreshStats() {
+  try {
+    const r = await fetch('/api/stats');
+    if (!r.ok) return;
+    const d = await r.json();
+    PROM_TILES.forEach(t => {
+      const el = document.getElementById(`tile-${t.id}`);
+      const v = d[t.id];
+      if (v == null) { el.textContent = '—'; el.className = 'tile-value'; return; }
+      el.innerHTML = `${v.toFixed(t.decimals)}<span class="unit"> ${t.unit}</span>`;
+      el.className = 'tile-value ' + classify(v, t.thresholds);
+    });
+  } catch (e) { /* silent */ }
+}
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 function iconEl(icon, name) {
@@ -403,6 +453,9 @@ function toast(msg) {
 }
 
 // ── Init ───────────────────────────────────────────────────────────────────
+renderStats();
+refreshStats();
+setInterval(refreshStats, 30000);
 reload();
 </script>
 </body>

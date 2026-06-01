@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import json, uuid, os
+import json, uuid, os, urllib.parse, urllib.request
 
 DATA_FILE = os.environ.get("SERVICES_FILE", "/var/www/html/services.json")
+PROMETHEUS_URL = os.environ.get("PROMETHEUS_URL", "http://127.0.0.1:9090")
 
 app = FastAPI(title="Homelab Dashboard API")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -32,6 +33,38 @@ class SectionIn(BaseModel):
 @app.get("/api/services")
 def get_services():
     return load()
+
+
+# ── Stats (read-only Prometheus summary) ─────────────────────────────────────
+# Mirrors the tile set on the homelab-portal dashboard. Queries the Prometheus
+# running alongside us on this host (PROMETHEUS_URL, default localhost:9090),
+# so it needs no auth and stays on the box.
+TILE_QUERIES = {
+    "cpu_pct":      '100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)',
+    "mem_pct":      '(1 - (avg(node_memory_MemAvailable_bytes) / avg(node_memory_MemTotal_bytes))) * 100',
+    "disk_pct":     'max(100 - (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs"} * 100 / node_filesystem_size_bytes))',
+    "net_rx_mbps":  'sum(rate(node_network_receive_bytes_total{device!~"lo|docker.*|veth.*|tailscale.*"}[5m])) * 8 / 1024 / 1024',
+    "targets_up":   'sum(up == 1)',
+    "targets_down": 'sum(up == 0)',
+}
+
+
+def _prom_query(expr: str):
+    url = f"{PROMETHEUS_URL}/api/v1/query?" + urllib.parse.urlencode({"query": expr})
+    with urllib.request.urlopen(url, timeout=4) as r:
+        result = json.load(r).get("data", {}).get("result", [])
+    return float(result[0]["value"][1]) if result else None
+
+
+@app.get("/api/stats")
+def get_stats():
+    out = {}
+    for key, expr in TILE_QUERIES.items():
+        try:
+            out[key] = _prom_query(expr)
+        except Exception:
+            out[key] = None
+    return out
 
 
 @app.post("/api/sections")
