@@ -60,7 +60,7 @@
         { "id": "openwebui",  "name": "Open WebUI",  "url": "https://homelab-proxy.tail73c4fe.ts.net/open-webui/", "tag": "LLM Chat",      "icon": "open-webui",  "tags": "openwebui ai llm chat ollama openai interface" },
         { "id": "openclaw",   "name": "OpenClaw",    "url": "https://ai.tail73c4fe.ts.net/",                         "tag": "AI Assistant",  "icon": "",            "tags": "openclaw ai assistant personal chat tailscale" },
         { "id": "llamacpp",   "name": "llama.cpp",   "url": "https://homelab-proxy.tail73c4fe.ts.net/llamacpp/",     "tag": "Inference",     "icon": "",            "tags": "llama cpp local inference gpu" },
-        { "id": "hermesagent","name": "Hermes Agent","url": "http://hermesagent.tail73c4fe.ts.net:9119",             "tag": "Agent",         "icon": "",            "tags": "hermes agent ai automation news tailscale" }
+        { "id": "hermesagent","name": "Hermes Agent","url": "https://hermesagent.tail73c4fe.ts.net/",                "tag": "Agent",         "icon": "",            "tags": "hermes agent ai automation news tailscale" }
       ]
     },
     {
