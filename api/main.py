@@ -1,13 +1,27 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import json, uuid, os, urllib.parse, urllib.request
+from typing import Optional
+import json, uuid, os, tempfile, urllib.parse, urllib.request
 
 DATA_FILE = os.environ.get("SERVICES_FILE", "/var/www/html/services.json")
 PROMETHEUS_URL = os.environ.get("PROMETHEUS_URL", "http://127.0.0.1:9090")
+ADMIN_GROUP = os.environ.get("ADMIN_GROUP", "homelab-admins")
 
 app = FastAPI(title="Homelab Dashboard API")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+# Same-origin app (served behind nginx on this host); no cross-origin browser
+# clients, so don't advertise a permissive CORS policy that would let arbitrary
+# external pages script the write endpoints.
+app.add_middleware(CORSMiddleware, allow_origins=[], allow_methods=["*"], allow_headers=["*"])
+
+
+def require_admin(x_authentik_groups: Optional[str]):
+    """Writes must carry the homelab-admins group. nginx forwards this header
+    only after a successful Authentik auth_request; the LAN read-bypass path
+    does not reach the write endpoints (see homelab.conf)."""
+    groups = [g.strip() for g in (x_authentik_groups or "").replace("|", ",").split(",") if g.strip()]
+    if ADMIN_GROUP not in groups:
+        raise HTTPException(403, "Editor role required")
 
 
 def load():
@@ -15,8 +29,23 @@ def load():
         return json.load(f)
 
 def save(data):
-    with open(DATA_FILE, "w") as f:
-        json.dump(data, f, indent=2)
+    # Write to a temp file in the same dir, then atomically rename, so a crash
+    # mid-write can't truncate services.json and concurrent writers can't
+    # interleave a half-written file.
+    d = os.path.dirname(DATA_FILE) or "."
+    fd, tmp = tempfile.mkstemp(dir=d, prefix=".services.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(data, f, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, DATA_FILE)
+    except Exception:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
 
 
 class ServiceIn(BaseModel):
@@ -68,7 +97,8 @@ def get_stats():
 
 
 @app.post("/api/sections")
-def add_section(sec: SectionIn):
+def add_section(sec: SectionIn, x_authentik_groups: Optional[str] = Header(None)):
+    require_admin(x_authentik_groups)
     data = load()
     sec_id = sec.title.lower().replace(" ", "-")
     if any(s["id"] == sec_id for s in data["sections"]):
@@ -80,7 +110,8 @@ def add_section(sec: SectionIn):
 
 
 @app.delete("/api/sections/{section_id}")
-def delete_section(section_id: str):
+def delete_section(section_id: str, x_authentik_groups: Optional[str] = Header(None)):
+    require_admin(x_authentik_groups)
     data = load()
     before = len(data["sections"])
     data["sections"] = [s for s in data["sections"] if s["id"] != section_id]
@@ -91,7 +122,8 @@ def delete_section(section_id: str):
 
 
 @app.post("/api/sections/{section_id}/services")
-def add_service(section_id: str, svc: ServiceIn):
+def add_service(section_id: str, svc: ServiceIn, x_authentik_groups: Optional[str] = Header(None)):
+    require_admin(x_authentik_groups)
     data = load()
     for section in data["sections"]:
         if section["id"] == section_id:
@@ -103,7 +135,8 @@ def add_service(section_id: str, svc: ServiceIn):
 
 
 @app.put("/api/sections/{section_id}/services/{service_id}")
-def update_service(section_id: str, service_id: str, svc: ServiceIn):
+def update_service(section_id: str, service_id: str, svc: ServiceIn, x_authentik_groups: Optional[str] = Header(None)):
+    require_admin(x_authentik_groups)
     data = load()
     for section in data["sections"]:
         if section["id"] == section_id:
@@ -116,7 +149,8 @@ def update_service(section_id: str, service_id: str, svc: ServiceIn):
 
 
 @app.delete("/api/sections/{section_id}/services/{service_id}")
-def delete_service(section_id: str, service_id: str):
+def delete_service(section_id: str, service_id: str, x_authentik_groups: Optional[str] = Header(None)):
+    require_admin(x_authentik_groups)
     data = load()
     for section in data["sections"]:
         if section["id"] == section_id:

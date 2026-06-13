@@ -8,10 +8,10 @@
         { "id": "grafana-network", "name": "Grafana — Network",     "url": "http://192.168.1.127:3000/d/network-overview", "tag": "Network",      "icon": "grafana",      "tags": "grafana network blackbox probes" },
         { "id": "grafana-perf",    "name": "Grafana — Performance", "url": "http://192.168.1.127:3000/d/system-performance","tag": "Performance",  "icon": "grafana",      "tags": "grafana cpu memory gpu performance" },
         { "id": "grafana-logs",    "name": "Grafana — Logs",        "url": "http://192.168.1.127:3000/d/homelab-logs",     "tag": "Logs",         "icon": "grafana",      "tags": "grafana loki logs" },
-        { "id": "grafana-plex",    "name": "Grafana — Plex",        "url": "http://192.168.1.127:3000/d/plex-dashboard",   "tag": "Plex",         "icon": "grafana",      "tags": "grafana plex streams media" },
+        { "id": "grafana-plex",    "name": "Grafana — Plex",        "url": "http://192.168.1.127:3000/d/plex-monitoring",  "tag": "Plex",         "icon": "grafana",      "tags": "grafana plex streams media" },
         { "id": "prometheus",      "name": "Prometheus",            "url": "http://192.168.1.127:9090",                    "tag": "Metrics",      "icon": "prometheus",   "tags": "prometheus metrics scraper targets" },
         { "id": "alertmanager",    "name": "Alertmanager",          "url": "http://192.168.1.127:9093",                    "tag": "Alerts",       "icon": "alertmanager", "tags": "alertmanager alerts telegram notifications" },
-        { "id": "uptime-kuma",     "name": "Uptime Kuma",           "url": "https://homelab-proxy.tail73c4fe.ts.net/uptime-kuma/", "tag": "Uptime",       "icon": "uptime-kuma",  "tags": "uptime kuma monitoring availability" },
+        { "id": "uptime-kuma",     "name": "Uptime Kuma",           "url": "https://uptime-kuma.tail73c4fe.ts.net",        "tag": "Uptime",       "icon": "uptime-kuma",  "tags": "uptime kuma monitoring availability" },
         { "id": "beszel",          "name": "Beszel",                "url": "https://homelab-proxy.tail73c4fe.ts.net/beszel/",      "tag": "System",       "icon": "beszel",       "tags": "beszel system monitor resources" },
         { "id": "update-server",   "name": "Update Server",         "url": "http://192.168.1.127:9910",                    "tag": "Updates",      "icon": "",             "tags": "apt updates packages upgrade" }
       ]
@@ -59,7 +59,7 @@
       "services": [
         { "id": "openwebui",  "name": "Open WebUI",  "url": "https://homelab-proxy.tail73c4fe.ts.net/open-webui/", "tag": "LLM Chat",      "icon": "open-webui",  "tags": "openwebui ai llm chat ollama openai interface" },
         { "id": "openclaw",   "name": "OpenClaw",    "url": "https://ai.tail73c4fe.ts.net/",                         "tag": "AI Assistant",  "icon": "",            "tags": "openclaw ai assistant personal chat tailscale" },
-        { "id": "llamacpp",   "name": "llama.cpp",   "url": "https://homelab-proxy.tail73c4fe.ts.net/llamacpp/",     "tag": "Inference",     "icon": "",            "tags": "llama cpp local inference gpu" },
+        { "id": "llamacpp",   "name": "llama.cpp",   "url": "http://192.168.1.25:8080",                             "tag": "Inference",     "icon": "",            "tags": "llama cpp local inference gpu" },
         { "id": "hermesagent","name": "Hermes Agent","url": "https://hermesagent.tail73c4fe.ts.net/",                "tag": "Agent",         "icon": "",            "tags": "hermes agent ai automation news tailscale" },
         { "id": "comfyui",    "name": "ComfyUI",     "url": "https://ai.tail73c4fe.ts.net:8443/",                    "tag": "Image Gen",     "icon": "comfyui",     "tags": "comfyui stable diffusion flux image video generation sd" }
       ]
