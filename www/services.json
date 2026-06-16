@@ -4,72 +4,304 @@
       "id": "monitoring",
       "title": "Monitoring",
       "services": [
-        { "id": "grafana-home",    "name": "Grafana — Home",        "url": "http://192.168.1.127:3000/d/home-overview",    "tag": "Dashboards",   "icon": "grafana",      "tags": "grafana dashboards home overview" },
-        { "id": "grafana-network", "name": "Grafana — Network",     "url": "http://192.168.1.127:3000/d/network-overview", "tag": "Network",      "icon": "grafana",      "tags": "grafana network blackbox probes" },
-        { "id": "grafana-perf",    "name": "Grafana — Performance", "url": "http://192.168.1.127:3000/d/system-performance","tag": "Performance",  "icon": "grafana",      "tags": "grafana cpu memory gpu performance" },
-        { "id": "grafana-logs",    "name": "Grafana — Logs",        "url": "http://192.168.1.127:3000/d/homelab-logs",     "tag": "Logs",         "icon": "grafana",      "tags": "grafana loki logs" },
-        { "id": "grafana-plex",    "name": "Grafana — Plex",        "url": "http://192.168.1.127:3000/d/plex-monitoring",  "tag": "Plex",         "icon": "grafana",      "tags": "grafana plex streams media" },
-        { "id": "prometheus",      "name": "Prometheus",            "url": "http://192.168.1.127:9090",                    "tag": "Metrics",      "icon": "prometheus",   "tags": "prometheus metrics scraper targets" },
-        { "id": "alertmanager",    "name": "Alertmanager",          "url": "http://192.168.1.127:9093",                    "tag": "Alerts",       "icon": "alertmanager", "tags": "alertmanager alerts telegram notifications" },
-        { "id": "uptime-kuma",     "name": "Uptime Kuma",           "url": "https://uptime-kuma.tail73c4fe.ts.net",        "tag": "Uptime",       "icon": "uptime-kuma",  "tags": "uptime kuma monitoring availability" },
-        { "id": "beszel",          "name": "Beszel",                "url": "https://homelab-proxy.tail73c4fe.ts.net/beszel/",      "tag": "System",       "icon": "beszel",       "tags": "beszel system monitor resources" },
-        { "id": "update-server",   "name": "Update Server",         "url": "http://192.168.1.127:9910",                    "tag": "Updates",      "icon": "",             "tags": "apt updates packages upgrade" }
+        {
+          "id": "grafana-home",
+          "name": "Grafana \u2014 Home",
+          "url": "http://192.168.1.127:3000/d/home-overview",
+          "tag": "Dashboards",
+          "icon": "grafana",
+          "tags": "grafana dashboards home overview"
+        },
+        {
+          "id": "grafana-network",
+          "name": "Grafana \u2014 Network",
+          "url": "http://192.168.1.127:3000/d/network-overview",
+          "tag": "Network",
+          "icon": "grafana",
+          "tags": "grafana network blackbox probes"
+        },
+        {
+          "id": "grafana-perf",
+          "name": "Grafana \u2014 Performance",
+          "url": "http://192.168.1.127:3000/d/system-performance",
+          "tag": "Performance",
+          "icon": "grafana",
+          "tags": "grafana cpu memory gpu performance"
+        },
+        {
+          "id": "grafana-logs",
+          "name": "Grafana \u2014 Logs",
+          "url": "http://192.168.1.127:3000/d/homelab-logs",
+          "tag": "Logs",
+          "icon": "grafana",
+          "tags": "grafana loki logs"
+        },
+        {
+          "id": "grafana-plex",
+          "name": "Grafana \u2014 Plex",
+          "url": "http://192.168.1.127:3000/d/plex-monitoring",
+          "tag": "Plex",
+          "icon": "grafana",
+          "tags": "grafana plex streams media"
+        },
+        {
+          "id": "prometheus",
+          "name": "Prometheus",
+          "url": "http://192.168.1.127:9090",
+          "tag": "Metrics",
+          "icon": "prometheus",
+          "tags": "prometheus metrics scraper targets"
+        },
+        {
+          "id": "alertmanager",
+          "name": "Alertmanager",
+          "url": "http://192.168.1.127:9093",
+          "tag": "Alerts",
+          "icon": "alertmanager",
+          "tags": "alertmanager alerts telegram notifications"
+        },
+        {
+          "id": "uptime-kuma",
+          "name": "Uptime Kuma",
+          "url": "https://uptime-kuma.tail73c4fe.ts.net",
+          "tag": "Uptime",
+          "icon": "uptime-kuma",
+          "tags": "uptime kuma monitoring availability"
+        },
+        {
+          "id": "beszel",
+          "name": "Beszel",
+          "url": "https://homelab-proxy.tail73c4fe.ts.net/beszel/",
+          "tag": "System",
+          "icon": "beszel",
+          "tags": "beszel system monitor resources"
+        },
+        {
+          "id": "update-server",
+          "name": "Update Server",
+          "url": "http://192.168.1.127:9910",
+          "tag": "Updates",
+          "icon": "",
+          "tags": "apt updates packages upgrade"
+        }
       ]
     },
     {
       "id": "infrastructure",
       "title": "Infrastructure",
       "services": [
-        { "id": "proxmox",     "name": "Proxmox VE",          "url": "https://192.168.1.5:8006",   "tag": "Hypervisor",  "icon": "proxmox",                "tags": "proxmox hypervisor vms lxc containers" },
-        { "id": "pbs",         "name": "Proxmox Backup",      "url": "https://192.168.1.55:8007",  "tag": "Backup",      "icon": "proxmox-backup-server",  "tags": "proxmox backup pbs storage" },
-        { "id": "authentik",   "name": "Authentik",           "url": "http://192.168.1.81:9000",   "tag": "SSO",         "icon": "authentik",              "tags": "authentik sso identity oauth oidc" },
-        { "id": "vaultwarden", "name": "Vaultwarden",         "url": "https://192.168.1.83:80",    "tag": "Passwords",   "icon": "vaultwarden",            "tags": "vaultwarden bitwarden passwords vault" },
-        { "id": "netbox",      "name": "NetBox",              "url": "https://homelab-proxy.tail73c4fe.ts.net/netbox/", "tag": "IPAM",        "icon": "netbox",                 "tags": "netbox ipam network documentation" }
+        {
+          "id": "proxmox",
+          "name": "Proxmox VE",
+          "url": "https://192.168.1.5:8006",
+          "tag": "Hypervisor",
+          "icon": "proxmox",
+          "tags": "proxmox hypervisor vms lxc containers"
+        },
+        {
+          "id": "pbs",
+          "name": "Proxmox Backup",
+          "url": "https://192.168.1.55:8007",
+          "tag": "Backup",
+          "icon": "proxmox-backup-server",
+          "tags": "proxmox backup pbs storage"
+        },
+        {
+          "id": "authentik",
+          "name": "Authentik",
+          "url": "http://192.168.1.81:9000",
+          "tag": "SSO",
+          "icon": "authentik",
+          "tags": "authentik sso identity oauth oidc"
+        },
+        {
+          "id": "vaultwarden",
+          "name": "Vaultwarden",
+          "url": "https://192.168.1.83:80",
+          "tag": "Passwords",
+          "icon": "vaultwarden",
+          "tags": "vaultwarden bitwarden passwords vault"
+        },
+        {
+          "id": "netbox",
+          "name": "NetBox",
+          "url": "https://homelab-proxy.tail73c4fe.ts.net/netbox/",
+          "tag": "IPAM",
+          "icon": "netbox",
+          "tags": "netbox ipam network documentation"
+        }
       ]
     },
     {
       "id": "security",
       "title": "Security",
       "services": [
-        { "id": "greenbone",   "name": "Greenbone OpenVAS",   "url": "https://192.168.1.123",      "tag": "Scanner",     "icon": "greenbone",   "tags": "greenbone openvas vulnerability scanner security" }
+        {
+          "id": "greenbone",
+          "name": "Greenbone OpenVAS",
+          "url": "https://192.168.1.123",
+          "tag": "Scanner",
+          "icon": "greenbone",
+          "tags": "greenbone openvas vulnerability scanner security"
+        }
       ]
     },
     {
       "id": "network",
       "title": "Network",
       "services": [
-        { "id": "pihole",      "name": "Pi-hole",             "url": "https://homelab-proxy.tail73c4fe.ts.net/pihole/",  "tag": "DNS",         "icon": "pi-hole",     "tags": "pihole dns adblock filter network" },
-        { "id": "searxng",     "name": "SearXNG",             "url": "https://homelab-proxy.tail73c4fe.ts.net/searxng/", "tag": "Search",      "icon": "searxng",     "tags": "searxng search engine privacy" },
-        { "id": "qnap",        "name": "QNAP NAS",            "url": "http://192.168.1.20",        "tag": "NAS",         "icon": "qnap",        "tags": "qnap nas storage files network" }
+        {
+          "id": "pihole",
+          "name": "Pi-hole",
+          "url": "https://homelab-proxy.tail73c4fe.ts.net/pihole/",
+          "tag": "DNS",
+          "icon": "pi-hole",
+          "tags": "pihole dns adblock filter network"
+        },
+        {
+          "id": "searxng",
+          "name": "SearXNG",
+          "url": "https://homelab-proxy.tail73c4fe.ts.net/searxng/",
+          "tag": "Search",
+          "icon": "searxng",
+          "tags": "searxng search engine privacy"
+        },
+        {
+          "id": "qnap",
+          "name": "QNAP NAS",
+          "url": "http://192.168.1.20",
+          "tag": "NAS",
+          "icon": "qnap",
+          "tags": "qnap nas storage files network"
+        }
       ]
     },
     {
       "id": "media",
       "title": "Media",
       "services": [
-        { "id": "plex",          "name": "Plex",              "url": "https://homelab-proxy.tail73c4fe.ts.net/plex/",         "tag": "Media",    "icon": "plex",         "tags": "plex media server movies tv music" },
-        { "id": "medusa",        "name": "Medusa",            "url": "https://homelab-proxy.tail73c4fe.ts.net/medusa/",       "tag": "TV",       "icon": "medusa",       "tags": "medusa tv shows sonarr nzb" },
-        { "id": "jackett",       "name": "Jackett",           "url": "https://homelab-proxy.tail73c4fe.ts.net/jackett/",      "tag": "Indexer",  "icon": "jackett",      "tags": "jackett indexer torrent tracker" },
-        { "id": "qbittorrent",   "name": "qBittorrent",       "url": "https://homelab-proxy.tail73c4fe.ts.net/qbittorrent/",  "tag": "Torrent",  "icon": "qbittorrent",  "tags": "qbittorrent torrent download vpn" }
+        {
+          "id": "plex",
+          "name": "Plex",
+          "url": "https://homelab-proxy.tail73c4fe.ts.net/plex/",
+          "tag": "Media",
+          "icon": "plex",
+          "tags": "plex media server movies tv music"
+        },
+        {
+          "id": "medusa",
+          "name": "Medusa",
+          "url": "https://homelab-proxy.tail73c4fe.ts.net/medusa/",
+          "tag": "TV",
+          "icon": "medusa",
+          "tags": "medusa tv shows sonarr nzb"
+        },
+        {
+          "id": "jackett",
+          "name": "Jackett",
+          "url": "https://homelab-proxy.tail73c4fe.ts.net/jackett/",
+          "tag": "Indexer",
+          "icon": "jackett",
+          "tags": "jackett indexer torrent tracker"
+        },
+        {
+          "id": "qbittorrent",
+          "name": "qBittorrent",
+          "url": "https://homelab-proxy.tail73c4fe.ts.net/qbittorrent/",
+          "tag": "Torrent",
+          "icon": "qbittorrent",
+          "tags": "qbittorrent torrent download vpn"
+        },
+        {
+          "id": "byparr",
+          "name": "Byparr",
+          "url": "http://192.168.1.108:8191",
+          "tag": "Solver",
+          "icon": "flaresolverr",
+          "tags": "byparr cloudflare flaresolverr solver proxy indexer"
+        }
       ]
     },
     {
       "id": "ai",
       "title": "AI",
       "services": [
-        { "id": "openwebui",  "name": "Open WebUI",  "url": "https://homelab-proxy.tail73c4fe.ts.net/open-webui/", "tag": "LLM Chat",      "icon": "open-webui",  "tags": "openwebui ai llm chat ollama openai interface" },
-        { "id": "openclaw",   "name": "OpenClaw",    "url": "https://ai.tail73c4fe.ts.net/",                         "tag": "AI Assistant",  "icon": "",            "tags": "openclaw ai assistant personal chat tailscale" },
-        { "id": "llamacpp",   "name": "llama.cpp",   "url": "http://192.168.1.25:8080",                             "tag": "Inference",     "icon": "",            "tags": "llama cpp local inference gpu" },
-        { "id": "hermesagent","name": "Hermes Agent","url": "https://hermesagent.tail73c4fe.ts.net/",                "tag": "Agent",         "icon": "",            "tags": "hermes agent ai automation news tailscale" },
-        { "id": "comfyui",    "name": "ComfyUI",     "url": "https://ai.tail73c4fe.ts.net:8443/",                    "tag": "Image Gen",     "icon": "comfyui",     "tags": "comfyui stable diffusion flux image video generation sd" }
+        {
+          "id": "openwebui",
+          "name": "Open WebUI",
+          "url": "https://homelab-proxy.tail73c4fe.ts.net/open-webui/",
+          "tag": "LLM Chat",
+          "icon": "open-webui",
+          "tags": "openwebui ai llm chat ollama openai interface"
+        },
+        {
+          "id": "openclaw",
+          "name": "OpenClaw",
+          "url": "https://ai.tail73c4fe.ts.net/",
+          "tag": "AI Assistant",
+          "icon": "",
+          "tags": "openclaw ai assistant personal chat tailscale"
+        },
+        {
+          "id": "llamacpp",
+          "name": "llama.cpp",
+          "url": "http://192.168.1.25:8080",
+          "tag": "Inference",
+          "icon": "",
+          "tags": "llama cpp local inference gpu"
+        },
+        {
+          "id": "hermesagent",
+          "name": "Hermes Agent",
+          "url": "https://hermesagent.tail73c4fe.ts.net/",
+          "tag": "Agent",
+          "icon": "",
+          "tags": "hermes agent ai automation news tailscale"
+        },
+        {
+          "id": "comfyui",
+          "name": "ComfyUI",
+          "url": "https://ai.tail73c4fe.ts.net:8443/",
+          "tag": "Image Gen",
+          "icon": "comfyui",
+          "tags": "comfyui stable diffusion flux image video generation sd"
+        }
       ]
     },
     {
       "id": "devices",
       "title": "Devices",
       "services": [
-        { "id": "denon",    "name": "Denon AVR-A10H",  "url": "http://192.168.1.166",  "tag": "AV Receiver",  "icon": "",  "tags": "denon avr receiver audio home theater" },
-        { "id": "netgear",  "name": "NETGEAR RBE770",  "url": "http://192.168.1.157",  "tag": "Switch",       "icon": "",  "tags": "netgear switch rbe770 network" }
+        {
+          "id": "denon",
+          "name": "Denon AVR-A10H",
+          "url": "http://192.168.1.166",
+          "tag": "AV Receiver",
+          "icon": "",
+          "tags": "denon avr receiver audio home theater"
+        },
+        {
+          "id": "netgear",
+          "name": "NETGEAR RBE770",
+          "url": "http://192.168.1.157",
+          "tag": "Switch",
+          "icon": "",
+          "tags": "netgear switch rbe770 network"
+        }
+      ]
+    },
+    {
+      "id": "productivity",
+      "title": "Productivity",
+      "services": [
+        {
+          "id": "joplin",
+          "name": "Joplin",
+          "url": "https://joplin.tail73c4fe.ts.net/",
+          "tag": "Notes",
+          "icon": "joplin",
+          "tags": "joplin notes markdown sync"
+        }
       ]
     }
   ]
